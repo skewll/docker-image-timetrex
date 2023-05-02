@@ -1,6 +1,7 @@
-FROM ubuntu:xenial
+FROM ubuntu:22.04
+#FROM debian:bullseye-slim
 
-MAINTAINER Josh Lukens <jlukens@botch.com>
+MAINTAINER skewll <mc@skewll.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -10,37 +11,61 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-RUN apt-get update -y -qq && \
-    apt-get dist-upgrade -y && \
-    apt-get install -y locales software-properties-common && \
-    locale-gen en_US.UTF-8 && \
-    dpkg-reconfigure locales && \
+# The Envs above, are they needed? Are they doing anything at all? I see this in the build log with ubuntu and debian-bulleye:
+#
+# perl: warning: Setting locale failed.
+# perl: warning: Please check that your locale settings:
+# 	LANGUAGE = "en_US:en",
+# 	LC_ALL = "en_US.UTF-8",
+# 	LANG = "en_US.UTF-8"
+#     are supported and installed on your system.
+# perl: warning: Falling back to the standard locale ("C").
+# debconf: delaying package configuration, since apt-utils is not installed /#
+
+# Do some stuff.
+RUN apt-get update -y -qq
+RUN apt-get dist-upgrade -y
+RUN apt-get install -y locales software-properties-common
+RUN locale-gen en_US.UTF-8
+RUN dpkg-reconfigure locales
 
 # install tools
-    apt-get install -y supervisor vim unzip wget && \
+RUN apt-get install -y supervisor vim unzip wget
 
-# install TimeTrex prequirements
-    apt-get install -y apache2 libapache2-mod-php php php7.0-cgi php7.0-cli php7.0-pgsql php7.0-pspell php7.0-gd php7.0-gettext php7.0-imap php7.0-intl php7.0-json php7.0-soap php7.0-zip php7.0-mcrypt php7.0-curl php7.0-ldap php7.0-xml php7.0-xsl php7.0-mbstring php7.0-bcmath postgresql && \
+# install TimeTrex prequirements (Timetrex)
+RUN add-apt-repository universe
+
+#    Ubuntu 22.04 [Jammy] / Debian 12 [Bookworm]: (Timetrex) - php8.1.json
+RUN apt-get install -y unzip apache2 libapache2-mod-php php php8.1-cgi php8.1-cli php8.1-pgsql php8.1-pspell php8.1-gd php8.1-gettext php8.1-imap php8.1-intl php8.1-soap php8.1-zip php8.1-curl php8.1-ldap php8.1-xml php8.1-xsl php8.1-mbstring php8.1-bcmath postgresql
+
+# Restart Apache after all packages are installed: (Timetrex)
+RUN service apache2 restart
 
 # clean up
-    apt-get autoclean && apt-get autoremove && \
-    rm -rf /var/lib/apt/lists/* && \
+RUN apt-get autoclean && apt-get autoremove
+RUN rm -rf /var/lib/apt/lists/*
 
-# install timetrex
-    cd /tmp  && \
-#    wget http://www.timetrex.com/direct_download/TimeTrex_Community_Edition_v11.0.2.zip && \
-#    unzip TimeTrex_Community_Edition_v11.0.2.zip -d /var/www/html/ && \
-#    rm -f /tmp/TimeTrex_Community_Edition_v11.0.2.zip && \
-    wget http://www.timetrex.com/download/TimeTrex_Community_Edition-manual-installer.zip && \
-    unzip TimeTrex_Community_Edition-manual-installer.zip -d /var/www/html/ && \
-    rm -f /tmp/TimeTrex_Community_Edition-manual-installer.zip && \
-    mv /var/www/html/TimeTrex* /var/www/html/timetrex && \
-    chgrp www-data -R /var/www/html/timetrex/ && \
-    chmod 775 /var/www/html/timetrex && \
-    mkdir /database && \
-    chown -R postgres: /database && \
-    sed -i "s#data_directory =.*#data_directory = '/database'#" /etc/postgresql/9.5/main/postgresql.conf && \
-    chsh -s /bin/bash www-data
+# Download the TimeTrex .ZIP file to your computer.(Timetrex)
+RUN cd /tmp 
+RUN wget http://www.timetrex.com/download/TimeTrex_Community_Edition-manual-installer.zip
+
+# Unzip the TimeTrex .ZIP file to the root web directory: (Timetrex)
+RUN unzip TimeTrex_Community_Edition-manual-installer.zip -d /var/www/html/
+RUN rm -f /tmp/TimeTrex_Community_Edition-manual-installer.zip
+
+# Rename the unzipped directory: (Timetrex)
+RUN mv /var/www/html/TimeTrex*/ /var/www/html/timetrex
+
+# Rename the TimeTrex.ini.php file: (Timetrex)
+RUN mv /var/www/html/timetrex/timetrex.ini.php-example_linux /var/www/html/timetrex/timetrex.ini.php
+
+#Do some other magical shit.
+RUN chgrp www-data -R /var/www/html/timetrex/
+RUN chmod 775 /var/www/html/timetrex
+RUN mkdir /database
+RUN chown -R postgres: /database
+RUN sed -i "s#data_directory =.*#data_directory = '/database'#" /etc/postgresql/14/main/postgresql.conf
+RUN chsh -s /bin/bash www-data
 
 
 COPY ["supervisord.conf", "httpd.conf", "maint.conf", "postgres.conf", "/etc/supervisor/conf.d/"]

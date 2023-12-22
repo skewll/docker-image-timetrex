@@ -1,7 +1,7 @@
-FROM ubuntu:22.04
+FROM alpine:3.19.0
+#FROM ubuntu:22.04
 #FROM debian:bullseye-slim
-
-ENV DEBIAN_FRONTEND noninteractive
+#ENV DEBIAN_FRONTEND noninteractive
 
 USER root
 

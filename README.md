@@ -61,7 +61,7 @@ docker run -d \
 
 For persisting data and to have easy access to your timetrex.ini.php config file, map your volumes:
 ```
-mkdir -p /Appdata/timetrex/storage
+mkdir /Appdata/timetrex/storage
 mkdir /Appdata/timetrex/logs
 mkdir /Appdata/timetrex/database
 touch /Appdata/timetrex/timetrex.ini.php

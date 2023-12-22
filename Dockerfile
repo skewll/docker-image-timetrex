@@ -1,7 +1,7 @@
 #FROM alpine:3.19.0
 #FROM ubuntu:22.04
 #FROM debian:bullseye-slim
-FROM debian:bookworm:12.4
+FROM debian:12.4
 #ENV DEBIAN_FRONTEND noninteractive
 
 USER root

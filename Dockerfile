@@ -2,7 +2,7 @@
 FROM ubuntu:22.04
 #FROM debian:bullseye-slim
 #FROM debian:12.4
-#ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND noninteractive
 
 USER root
 

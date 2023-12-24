@@ -15,7 +15,7 @@ fi
 chgrp www-data /var/www/html/timetrex/timetrex.ini.php
 chmod 664 /var/www/html/timetrex/timetrex.ini.php
 
-#TODO ignore this is user has included postgresql image in docker-compose.yaml
+#TODO ignore this if user has included postgresql image in docker-compose.yaml
 
 {
   #give postgres a chance to initiate incase this is first install for user
@@ -23,7 +23,10 @@ chmod 664 /var/www/html/timetrex/timetrex.ini.php
   sleep 10
   if [ ! -f /database/PG_VERSION ]; then
     echo "No database found. Creating one now."
+    service start
+    # /usr/lib/postgresql/14/bin/pg_ctl -D /database/ -l logfile start
     su - postgres -c "/usr/lib/postgresql/14/bin/initdb /database/"
+    su - postgres -c "/usr/lib/postgresql/14/bin/pg_ctl -D /database/ -l logfile start" #start database server
     su - postgres -c "psql -c \"CREATE USER timetrex WITH CREATEDB CREATEROLE LOGIN PASSWORD 'timetrex';\"; psql -c \"CREATE DATABASE timetrex;\"" &
     echo "Connect to http://[host]:[port]/timetrex/interface/install/install.php to finish installation."
   else

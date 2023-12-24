@@ -1,39 +1,32 @@
-# Docker Container for TimeTrex Workforce Management System
+# TimeTrex Workforce Management System Docker Container
 
-This is a working Docker image for running the TimeTrex open source
-time tracking and payroll system.  It contains apache, php,
+* (Updated Dec-24-2023) This is a complete working Docker image that runs the TimeTrex open source
+time tracking and payroll system.  It includes all you need to get going: apache, php,
 a postgres database, and TimeTrex Community Edition.
 
-More details about TimeTrex can be found at https://www.timetrex.com/community-edition
+* More details about TimeTrex can be found at https://www.timetrex.com/community-edition
 
-This container has no affiliation with TimeTrex. But thank you to the TimeTrex Community.
-
-
-
-TODOs
-- [x] ~~Many previous tasks.~~
-- [x] ~~Make docker image cross-platform compatible to use on rpi4 arm64~~
-- [x] ~~Figure out why retarting container always triggers "New version".~~
-- [x] ~~Figure out why I can only access UI from http://localhost:8080/timetrex/interface/html5/index.php.~~ Dont change baseurl
-- [ ] Make custom environments variables possible.
-- [ ] Make changes to code to make it more dynamic with future versions, etc. Example: Will * in the paths instead of 14 for postgresql work?
+* This is my first attempt at coding a dockerfile and bash scripting. Please star if it helped you!
 
 
-
-## What to expect:
+## What to expect the first time:
 
 * On first run it will initialize the postgres database as well as the timetrex.ini.php config file.
 
 * Once container is running, finish install at:  http://localhost:8080/timetrex/interface/install/install.php
 
+* Grab a coffee and come back in an hour, or watch the "Processing" icon spin on the installer.
+
 * Once install is complete, access timetrex at: http://localhost:8080/timetrex/interface/html5/index.php
 
-* You will be able to change some options via your mounted timetrex.ini.php after install.
+* You will also be able to change some options via your mounted timetrex.ini.php after install.
 
-## Getting started:
+* Set up your TimeTrex admin user, employees, company etc. Done.
 
 
-I recommend a portainer stack and of course mapping volumes for persisting data:
+## How to install:
+
+I recommend a portainer stack and mapping volumes for persisting data:
 ```
 ---
 version: "2.1"
@@ -49,15 +42,6 @@ services:
     ports:
       - 8080:80
     restart: unless-stopped
-```
-
-
-Quick run option:
-```
-docker run -d \
-           --name timetrex \
-           -p 8080:80 \
-           skewll/timetrex
 ```
 
 
@@ -86,19 +70,27 @@ docker run -d \
 
 * If serving public, set your hostname. I set mine to my sub.domain.com
 
-* You can run this behind nginx reverse proxy. To access TimeTrex UI from sub.domain.com add the following Customem Nginx Configuration under the "Edit Proxy Host" > "Advanced" tab
+* You can run this behind nginx reverse proxy. To access TimeTrex UI from sub.domain.com add the following Custom Nginx Configuration under the "Edit Proxy Host" > "Advanced" tab
 
 ```
 location = / {  
     return 301 https://sub.domain.com/timetrex;
 }
 ```
-
-* I am not sure if this is required, but I added the following under [other] as well:
+<!-- 
+* I no not belive this is required any more, but I added the following under [other] as well to troubleshoot a previous issue I had:
 ```
 ; Added settings to run behind nginx reverse proxy
 proxy_ip_address_header_name = 'HTTP_X_FORWARDED_FOR'
 proxy_protocol_header_name = 'HTTP_X_FORWARDED_PROTO'
-```
+``` -->
 
-* After making changes to timetrex.ini.php file, restart container.
+* After making changes to timetrex.ini.php file, I found it not neccassary to restart container for changes to take effect.
+
+## TODOs
+- [x] ~~Many previous tasks.~~
+- [x] ~~Make docker image cross-platform compatible to use on rpi4 arm64~~
+- [x] ~~Figure out why retarting container always triggers "New version".~~
+- [x] ~~Figure out why I can only access UI from http://localhost:8080/timetrex/interface/html5/index.php.~~ Dont change baseurl
+- [ ] Make custom environments variables possible.
+- [ ] Make changes to code to make it more dynamic with future versions, etc. Example: Will * in the paths instead of 14 for postgresql work?

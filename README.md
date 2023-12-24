@@ -13,7 +13,7 @@ This container has no affiliation with TimeTrex. But thank you to the TimeTrex C
 TODOs
 - [x] ~~Many previous tasks.~~
 - [x] ~~Make docker image cross-platform compatible to use on rpi4 arm64~~
-- [ ] Figure out why retarting container always triggers "New version". NOTE: Even though it prompts "Installing/Upgrading the TimeTrex database..". Its just trying to "upgrade" TimeTrex to the current version. After, you will still be able to log in after with previsouly set user login will work and data will still be there.
+- [x] ~~Figure out why retarting container always triggers "New version".~~
 - [x] ~~Figure out why I can only access UI from http://localhost:8080/timetrex/interface/html5/index.php.~~ Dont change baseurl
 - [ ] Make custom environments variables possible.
 - [ ] Make changes to code to make it more dynamic with future versions, etc. Example: Will * in the paths instead of 14 for postgresql work?
@@ -22,11 +22,13 @@ TODOs
 
 ## What to expect:
 
-* On first run it will initialize the postgres database as well as the config file.
+* On first run it will initialize the postgres database as well as the timetrex.ini.php config file.
 
 * Once container is running, finish install at:  http://localhost:8080/timetrex/interface/install/install.php
 
+* Once install is complete, access timetrex at: http://localhost:8080/timetrex/interface/html5/index.php
 
+* You will be able to change some options via your mounted timetrex.ini.php after install.
 
 ## Getting started:
 
@@ -99,4 +101,4 @@ proxy_ip_address_header_name = 'HTTP_X_FORWARDED_FOR'
 proxy_protocol_header_name = 'HTTP_X_FORWARDED_PROTO'
 ```
 
-* After making changes to timetrex.ini.php file, restart container. For now, if you restart the container it will detect it as a new version, put timetex in maintenance mode and make you go through the install process again, its quicker this time since timetrex is actually already installed. But after, you will be able to log in with your user account and your data old will be there, and your new config will be in effect.
+* After making changes to timetrex.ini.php file, restart container.

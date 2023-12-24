@@ -15,15 +15,17 @@ fi
 chgrp www-data /var/www/html/timetrex/timetrex.ini.php
 chmod 664 /var/www/html/timetrex/timetrex.ini.php
 
+
+#TODO ignore this is user has included postgresql image in docker-compose.yaml
+
+{
+
 # wait until postgresql is ready to serve
 until pg_isready --host localhost --port 5432; do \
     echo "waiting for PostgreSQL..."
 		sleep 0.1; \
 done
 
-#TODO ignore this is user has included postgresql image in docker-compose.yaml
-
-{
 if [ ! -f /database/PG_VERSION ]
 then
   su - postgres -c "/usr/lib/postgresql/14/bin/initdb /database/" 

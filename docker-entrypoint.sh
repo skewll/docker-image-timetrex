@@ -23,7 +23,6 @@ chmod 664 /var/www/html/timetrex/timetrex.ini.php
   sleep 10
   if [ ! -f /database/PG_VERSION ]; then
     echo "No database found. Creating one now."
-    service start
     # /usr/lib/postgresql/14/bin/pg_ctl -D /database/ -l logfile start
     su - postgres -c "/usr/lib/postgresql/14/bin/initdb /database/"
     su - postgres -c "/usr/lib/postgresql/14/bin/pg_ctl -D /database/ -l logfile start" #start database server

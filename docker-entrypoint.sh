@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mkdir -p /storage
-mkdir /logs 
+mkdir -p /logs 
 chgrp -R www-data /storage
 chmod 775 -R /storage
 chgrp www-data /logs
@@ -15,9 +15,15 @@ fi
 chgrp www-data /var/www/html/timetrex/timetrex.ini.php
 chmod 664 /var/www/html/timetrex/timetrex.ini.php
 
-# kick of delayed subshell so postgres will be up for queries
+# wait until postgresql is ready to serve
+until pg_isready --host localhost --port 5432; do \
+    echo "waiting for PostgreSQL..."
+		sleep 0.1; \
+done
+
+#TODO ignore this is user has included postgresql image in docker-compose.yaml
+
 {
-sleep 20;
 if [ ! -f /database/PG_VERSION ]
 then
   su - postgres -c "/usr/lib/postgresql/14/bin/initdb /database/" 

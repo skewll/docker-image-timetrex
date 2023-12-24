@@ -1,2 +1,4 @@
 .devcontainer
 .docker-compose.yaml
+.dockerignore
+.notes

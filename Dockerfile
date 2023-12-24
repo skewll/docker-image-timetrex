@@ -31,7 +31,7 @@ RUN dpkg-reconfigure locales
 # install tools
 RUN apt-get install -y supervisor vim unzip wget
 
-# install TimeTrex prequirements (Timetrex)
+# if using Ubuntu install TimeTrex prequirements (Timetrex)
 RUN add-apt-repository universe
 
 #    Ubuntu 22.04 [Jammy] / Debian 12 [Bookworm]: (Timetrex) - php8.1.json
@@ -56,7 +56,7 @@ RUN rm -f /tmp/TimeTrex_Community_Edition-manual-installer.zip
 RUN mv /var/www/html/TimeTrex*/ /var/www/html/timetrex
 
 # Rename the TimeTrex.ini.php file: (Timetrex)
-# RUN mv /var/www/html/timetrex/timetrex.ini.php-example_linux /var/www/html/timetrex/timetrex.ini.php # this is no longer needed. The default timetrec.ini IS the linux version
+# RUN mv /var/www/html/timetrex/timetrex.ini.php-example_linux /var/www/html/timetrex/timetrex.ini.php #! this is no longer needed. The default timetrec.ini IS the linux version also, .linux version is not included in this zip..
 
 #Do some other magical shit.
 RUN chgrp www-data -R /var/www/html/timetrex/
@@ -74,3 +74,4 @@ COPY ["timetrex.ini.php.dist", "/"]
 EXPOSE 80
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
+#CMD ["sleep","infinity"]

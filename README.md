@@ -38,6 +38,7 @@ mkdir /path/to/timetrex/logs
 mkdir /path/to/timetrex/database
 touch /path/to/timetrex/timetrex.ini.php
 
+yaml example:
 ---
 version: "2.1"
 services:
@@ -55,7 +56,7 @@ services:
 ```
 
 
-For persisting data and to have easy access to your timetrex.ini.php config file, map your volumes:
+You can also install from command line.
 ```
 mkdir /path/to/timetrex/storage
 mkdir /path/to/timetrex/logs

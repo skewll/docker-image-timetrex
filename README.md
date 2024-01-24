@@ -1,6 +1,6 @@
 # TimeTrex Workforce Management System Docker Container
 
-* (Updated Dec-24-2023) This is a complete working Docker image that runs the TimeTrex open source
+* (Updated Jan-23-2023) This is a complete working Docker image that runs the TimeTrex open source
 time tracking and payroll system.  It includes all you need to get going: apache, php,
 a postgres database, and TimeTrex Community Edition.
 
@@ -11,11 +11,15 @@ a postgres database, and TimeTrex Community Edition.
 
 ## What to expect the first time:
 
+* Follow the log to watch along.
+
 * On first run it will initialize the postgres database as well as the timetrex.ini.php config file.
 
-* Once container is running, finish install at:  http://localhost:8080/timetrex/interface/install/install.php
+* Postgres will install and start running. On my rip4 is takes 5 minutes to start, on my virtual box it starts in seconds.
 
-* Grab a coffee and come back in an hour, or watch the "Processing" icon spin on the installer.
+* Once its ready and running, finish install at:  http://localhost:8080/timetrex/interface/install/install.php
+
+* The "Processing" icon spin on the installer takes an hour on my rpi4 and seconds on my virtual box.
 
 * Once install is complete, access timetrex at: http://localhost:8080/timetrex/interface/html5/index.php
 
@@ -28,6 +32,12 @@ a postgres database, and TimeTrex Community Edition.
 
 I recommend a portainer stack and mapping volumes for persisting data:
 ```
+# First create the directories and a blank config file to bind.
+mkdir /path/to/timetrex/storage
+mkdir /path/to/timetrex/logs
+mkdir /path/to/timetrex/database
+touch /path/to/timetrex/timetrex.ini.php
+
 ---
 version: "2.1"
 services:
@@ -47,10 +57,10 @@ services:
 
 For persisting data and to have easy access to your timetrex.ini.php config file, map your volumes:
 ```
-mkdir /Appdata/timetrex/storage
-mkdir /Appdata/timetrex/logs
-mkdir /Appdata/timetrex/database
-touch /Appdata/timetrex/timetrex.ini.php
+mkdir /path/to/timetrex/storage
+mkdir /path/to/timetrex/logs
+mkdir /path/to/timetrex/database
+touch /path/to/timetrex/timetrex.ini.php
 docker run -d \
            --name timetrex \
            -p 8080:80 \
@@ -77,13 +87,20 @@ location = / {
     return 301 https://sub.domain.com/timetrex;
 }
 ```
-<!-- 
-* I no not belive this is required any more, but I added the following under [other] as well to troubleshoot a previous issue I had:
+
+* I am not exatly sure which of these made things work for me in the end, but I added the following under [other] as well to troubleshoot a previous issue I had:
 ```
-; Added settings to run behind nginx reverse proxy
+; Added/enabled settings to get things working while running behind nginx reverse proxy
+force_ssl = TRUE
+
 proxy_ip_address_header_name = 'HTTP_X_FORWARDED_FOR'
 proxy_protocol_header_name = 'HTTP_X_FORWARDED_PROTO'
-``` -->
+
+; Also enabled the following two settings:
+hostname = sub.domain.com
+
+enable_csrf_validation = TRUE
+```
 
 * After making changes to timetrex.ini.php file, I found it not neccassary to restart container for changes to take effect.
 
